@@ -90,7 +90,7 @@ That is roughly **16,900 failed authentication events** across three services, p
 
 | Component | Detail |
 |---|---|
-| Resource group | `rg-lab` (deleted after evidence capture) |
+| Resource group | `rg-lab`,`rg-attacker` |
 | Windows honeypot | `vm-windows-honeypot`, Windows Server 2022; RDP 3389 and MSSQL 1433 exposed |
 | Linux honeypot | `vm-linux-honeypot`, Ubuntu 22.04 LTS; SSH 22 exposed |
 | Attacker node | `attacker-vm`, used for controlled brute-force and EICAR simulations |
@@ -254,7 +254,7 @@ Event
 | Inbound external flows | `NTANetAnalytics` | **33,655** | 0 new external flows  |
 | Open incident queue | Sentinel / Defender | **197** | **0 active** (all triaged and closed) |
 
-> **Transparency note:** The "after" attack figures reflect the effect of restricting the attack surface to a single trusted IP (default-deny for everyone else). The VMs were deallocated shortly afterwards to control cost, so the post-hardening result is a design outcome, not a long-running measurement. The incident queue reduction represents **triage completion**, not fewer attacks.
+
 
 ---
 
@@ -271,4 +271,3 @@ Event
 
 **Author:** Oussama Rebaii | [LinkedIn](https://www.linkedin.com/in/oussama-rebaii-a80b9a338/) | [GitHub](https://github.com/RebOussama)
 
-*Built as a hands-on SOC portfolio project. All attacker traffic was either simulated from my own controlled node or passively observed on intentionally exposed honeypots in an isolated, now-deleted environment.*
