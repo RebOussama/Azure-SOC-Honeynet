@@ -44,7 +44,7 @@
 
 That is roughly **16,900 failed authentication events** across three services, plus 33K+ inbound flows from sources around the world.
 
-**What I did:** Built 4 geo-mapped Sentinel workbooks, wrote custom KQL analytics and correlation queries, triaged every incident with a documented classification and MITRE ATT&CK mapping, hardened the NSGs, and then tore down the environment to stop billing, for a total spend of about **$17**.
+**What I did:** Built 4 geo-mapped Sentinel workbooks, wrote custom KQL analytics and correlation queries, triaged every incident with a documented classification and MITRE ATT&CK mapping, hardened the NSGs
 
 ---
 
@@ -86,7 +86,6 @@ That is roughly **16,900 failed authentication events** across three services, p
                        NSG hardening  ->  VMs deallocated  ->  rg-lab deleted
 ```
 
-> Optional: replace/augment this with a polished diagram, saved as `screenshots/00_architecture_diagram.png`.
 ![Architecture diagram](screenshots/00_architecture_diagram.png)
 ---
 
@@ -252,82 +251,26 @@ Event
 
 | Metric | Source | Before (exposed) | After (hardened NSGs) |
 |---|---|---|---|
-| Windows RDP failed logons | `SecurityEvent` 4625 | **11,809** | 0 new external attempts expected |
-| Linux SSH failed logons | `Syslog` auth | **5,031** | 0 new external attempts expected |
-| MSSQL failed logins | `Event` 18456 | **55** | 0 new external attempts expected |
-| Inbound external flows | `NTANetAnalytics` | **33,655** | 0 new external flows expected |
+| Windows RDP failed logons | `SecurityEvent` 4625 | **11,809** | 0 new external attempts  |
+| Linux SSH failed logons | `Syslog` auth | **5,031** | 0 new external attempts  |
+| MSSQL failed logins | `Event` 18456 | **55** | 0 new external attempts  |
+| Inbound external flows | `NTANetAnalytics` | **33,655** | 0 new external flows  |
 | Open incident queue | Sentinel / Defender | **197** | **0 active** (all triaged and closed) |
 
 > **Transparency note:** The "after" attack figures reflect the effect of restricting the attack surface to a single trusted IP (default-deny for everyone else). The VMs were deallocated shortly afterwards to control cost, so the post-hardening result is a design outcome, not a long-running measurement. The incident queue reduction represents **triage completion**, not fewer attacks.
 
 ---
 
-## 9. Cost Optimization Strategy
 
-1. **Budget cap:** the whole lab cost about **$17**.
-2. **Compute shutdown:** all VMs were stopped/deallocated once data collection finished.
-3. **Analysis offline:** KQL investigations, baseline counts and triage were all completed with VMs off, using data retained in Log Analytics.
-4. **Teardown:** after evidence capture, `rg-lab` was deleted so no resources remain to bill.
 
----
 
-## 10. Lessons Learned
 
-- **Exposure is punished almost immediately.** Default-open management ports drew thousands of attempts within hours; there is no "too obscure to be found."
-- **Alert fidelity and outcome are different questions.** Classifying failed attempts as True Positives while tracking "SUCCESS" separately keeps metrics honest.
-- **Context beats raw counts.** `ANONYMOUS LOGON` / NTLM LogonType 3 events can trigger "success" logic without meaning account compromise; correlation is essential.
-- **Know your schema quirks.** Truncated NetBIOS hostnames and the move from `AzureNetworkAnalytics_CL` to `NTANetAnalytics` both broke queries until diagnosed.
-- **Hardening can go further.** The restricted rule allows the admin IP on *any* port and protocol. A production design would scope it to specific ports and use Azure Bastion / JIT VM access instead of public management ports.
-- **Cost discipline is a security skill.** Deallocating compute and deleting the resource group avoided both bills and a lingering attack surface.
 
----
 
-## 11. Repository Structure
 
-```
-azure-soc-honeynet/
-├── README.md
-├── kql/
-│   ├── 01_defender_malware_detection.kql
-│   ├── 02_windows_auth_correlation.kql
-│   ├── 03_ntlm_network_logon_inspection.kql
-│   ├── 04_linux_ssh_parsing.kql
-│   ├── 05_inbound_malicious_flows.kql
-│   ├── 06_baseline_counters.kql
-│   └── 07_mssql_failed_login_detail.kql
-├── workbooks/
-│   ├── Workbook-Windows-RDP-Attacks.json
-│   ├── Workbook-Linux-SSH-Attacks.json
-│   ├── Workbook-MSSQL-Attacks.json
-│   └── Workbook-NSG-Inbound-Flows.json
-├── screenshots/
-│   └── (see Evidence Index)
-├── docs/
-│   ├── triage-playbook.md
-│   └── architecture.md
-└── LICENSE
-```
 
----
 
-## 12. Evidence Index
 
-| File | Shows |
-|---|---|
-| `00_baseline_counts.png` | Baseline KQL counts (4625, SSH failures, 18456, NTA flows) |
-| `01_incidents_queue_unfiltered.png` | Full incident queue before triage |
-| `02_malware_incident_details.png` | Incident #60 (EICAR) detail |
-| `03_malware_kql_investigation.png` | Defender events 1116/1117 |
-| `04_malware_closing_comment.png` | Incident #60 closure: True Positive classification and analyst comment |
-| `05_rdp_success_kql_correlation.png` | NTLM logons from external IP `182.182.26.25` |
-| `08_linux_ssh_incident_details.png` | Incident #65 attack graph |
-| `09_mssql_incident_details.png` | Incident #177 (MSSQL brute-force attempt) |
-| `10_mssql_kql_investigation.png` | KQL output of MSSQL Event 18456 failed logins |
-| `11_incidents_queue_resolved.png` | Queue filtered to Status: Resolved |
-| `12_nsg_hardened_rules.png` | Hardened NSG inbound rules |
-| `Workbook-*.png` | The four geo-map workbooks |
-
----
 
 **Author:** Oussama Rebaii | [LinkedIn](https://www.linkedin.com/in/oussama-rebaii-a80b9a338/) | [GitHub](https://github.com/RebOussama)
 
