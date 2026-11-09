@@ -1,0 +1,11 @@
+SecurityEvent | where EventID == 4625 | count
+
+Syslog
+| where Facility in ("auth", "authpriv") and SyslogMessage contains "Failed"
+| count
+
+Event | where Source == "MSSQLSERVER" and EventID == 18456 | count
+
+NTANetAnalytics
+| where SubType == "FlowLog" and FlowType in ("ExternalPublic", "MaliciousFlow")
+| count

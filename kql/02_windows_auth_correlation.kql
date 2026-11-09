@@ -1,0 +1,9 @@
+SecurityEvent
+| where EventID in (4625, 4624) and LogonType in (3, 10)
+| where TimeGenerated > ago(7d)
+| summarize
+    FailedAttempts   = countif(EventID == 4625),
+    SuccessfulLogons = countif(EventID == 4624),
+    FirstAttempt     = min(TimeGenerated),
+    LastAttempt      = max(TimeGenerated)
+  by IpAddress, TargetAccount = TargetUserName, Computer

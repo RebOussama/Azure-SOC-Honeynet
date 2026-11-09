@@ -1,0 +1,8 @@
+Syslog
+| where Facility == "auth" and TimeGenerated > ago(7d)
+| where SyslogMessage has_any ("Failed password", "Accepted password")
+| parse SyslogMessage with * "for " TargetUser " from " SourceIP " port " *
+| summarize
+    Failures  = countif(SyslogMessage contains "Failed"),
+    Successes = countif(SyslogMessage contains "Accepted")
+  by SourceIP, TargetUser, HostName

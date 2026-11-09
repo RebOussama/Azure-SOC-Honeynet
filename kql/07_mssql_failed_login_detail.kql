@@ -1,0 +1,4 @@
+Event
+| where Source == "MSSQLSERVER" and EventID == 18456
+| project TimeGenerated, Computer, EventID, RenderedDescription
+| order by TimeGenerated desc

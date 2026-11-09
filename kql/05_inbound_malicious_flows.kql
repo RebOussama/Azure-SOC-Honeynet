@@ -1,0 +1,3 @@
+NTANetAnalytics
+| where SubType == "FlowLog" and FlowType in ("ExternalPublic", "MaliciousFlow")
+| count

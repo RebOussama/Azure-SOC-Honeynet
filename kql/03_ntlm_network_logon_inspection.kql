@@ -1,0 +1,5 @@
+SecurityEvent
+| where EventID == 4624 and Computer contains "vm-windows-hone"
+| where TimeGenerated > ago(7d)
+| project TimeGenerated, Computer, TargetUserName, IpAddress, LogonType, AuthenticationPackageName
+| order by TimeGenerated desc
