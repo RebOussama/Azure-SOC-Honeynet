@@ -21,10 +21,7 @@
 6. [SOC Triage Methodology](#6-soc-triage-methodology)
 7. [KQL Query Library](#7-kql-query-library)
 8. [Hardening & Impact](#8-hardening--impact)
-9. [Cost Optimization Strategy](#9-cost-optimization-strategy)
-10. [Lessons Learned](#10-lessons-learned)
-11. [Repository Structure](#11-repository-structure)
-12. [Evidence Index](#12-evidence-index)
+
 
 ---
 
